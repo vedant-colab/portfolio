@@ -1,0 +1,1151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Vedant Tiwari — Backend Engineer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+
+    /* ═══════════════════════════════════════════════════════════════
+       DESIGN TOKENS — refined for engineering clarity
+    ═══════════════════════════════════════════════════════════════ */
+    :root {
+      /* Backgrounds — slightly cooler whites, less warmth */
+      --bg:          #F7F7F6;
+      --bg-2:        #F0EFED;
+      --bg-3:        #E8E6E3;
+
+      /* Surfaces */
+      --surface:     rgba(255,255,255,0.88);
+      --surface-2:   rgba(255,255,255,0.60);
+
+      /* Borders — more defined, less ghostly */
+      --border:      rgba(0,0,0,0.09);
+      --border-2:    rgba(0,0,0,0.05);
+
+      /* Text — improved contrast ratios */
+      --text-primary:#111110;
+      --text-mid:    #3C3C3A;
+      --text-muted:  #6E6E6A;
+      --text-faint:  #9E9E9A;
+
+      /* Accent — slightly desaturated steel sage */
+      --accent:      #3D6B5E;
+      --accent-hover:#2E5248;
+      --accent-lt:   #5A8878;
+      --accent-bg:   rgba(61,107,94,0.06);
+      --accent-line: rgba(61,107,94,0.18);
+
+      /* Shadows — flatter, less diffuse */
+      --shadow-xs:   0 1px 2px rgba(0,0,0,0.05);
+      --shadow-sm:   0 1px 3px rgba(0,0,0,0.07), 0 4px 12px rgba(0,0,0,0.04);
+      --shadow-md:   0 2px 6px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.05);
+      --shadow-hover:0 4px 16px rgba(0,0,0,0.09), 0 1px 4px rgba(0,0,0,0.06);
+
+      /* Geometry */
+      --radius:      10px;
+      --radius-sm:   6px;
+      --radius-xs:   4px;
+      --max-w:       1100px;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       RESET + BASE
+    ═══════════════════════════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; font-size: 16px; }
+    body {
+      font-family: 'Geist', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    a { color: inherit; text-decoration: none; }
+
+    /* ═══════════════════════════════════════════════════════════════
+       LAYOUT
+    ═══════════════════════════════════════════════════════════════ */
+    .container {
+      width: 100%;
+      max-width: var(--max-w);
+      margin-inline: auto;
+      padding-inline: clamp(1.5rem, 5vw, 3.5rem);
+    }
+    section { padding-block: clamp(5.5rem, 11vw, 9rem); }
+
+    /* ═══════════════════════════════════════════════════════════════
+       TYPOGRAPHY — tighter, more technical
+    ═══════════════════════════════════════════════════════════════ */
+
+    /* Display: large heading with mono digit styling */
+    .t-display {
+      font-family: 'Geist', sans-serif;
+      font-size: clamp(2.6rem, 5.5vw, 4.5rem);
+      font-weight: 700;
+      line-height: 1.06;
+      letter-spacing: -0.035em;
+      color: var(--text-primary);
+    }
+
+    .t-h2 {
+      font-family: 'Geist', sans-serif;
+      font-size: clamp(1.5rem, 2.8vw, 2rem);
+      font-weight: 600;
+      letter-spacing: -0.025em;
+      color: var(--text-primary);
+    }
+
+    .t-h3 {
+      font-family: 'Geist', sans-serif;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: var(--text-primary);
+    }
+
+    .t-body {
+      font-size: 0.9rem;
+      color: var(--text-mid);
+      line-height: 1.8;
+      font-weight: 400;
+    }
+
+    /* Monospace for labels and metadata */
+    .t-mono {
+      font-family: 'Geist Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .t-label {
+      font-family: 'Geist Mono', monospace;
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.10em;
+      color: var(--accent);
+      font-weight: 400;
+    }
+
+    /* Subtle section counter style */
+    .t-counter {
+      font-family: 'Geist Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--text-faint);
+      letter-spacing: 0.04em;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       NAV — cleaner, less backdrop blur intensity
+    ═══════════════════════════════════════════════════════════════ */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px) saturate(140%);
+      -webkit-backdrop-filter: blur(10px) saturate(140%);
+      background: rgba(247,247,246,0.90);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+    }
+    .nav-logo {
+      font-family: 'Geist Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--text-primary);
+      letter-spacing: 0.02em;
+      font-weight: 400;
+    }
+    .nav-logo span { color: var(--accent); }
+    .nav-links { display: flex; gap: 2rem; list-style: none; }
+    .nav-links a {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      font-weight: 400;
+      transition: color 0.15s;
+      font-family: 'Geist', sans-serif;
+    }
+    .nav-links a:hover { color: var(--text-primary); }
+
+    /* ═══════════════════════════════════════════════════════════════
+       BUTTONS — flatter, more linear-style
+    ═══════════════════════════════════════════════════════════════ */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.6rem 1.25rem;
+      border-radius: var(--radius-sm);
+      font-size: 0.825rem;
+      font-weight: 500;
+      font-family: 'Geist', sans-serif;
+      cursor: pointer;
+      border: none;
+      transition: all 0.15s ease;
+      letter-spacing: -0.005em;
+    }
+    .btn-primary {
+      background: var(--text-primary);
+      color: #fff;
+      box-shadow: var(--shadow-xs);
+    }
+    .btn-primary:hover {
+      background: var(--accent);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-sm);
+    }
+    .btn-ghost {
+      background: var(--surface);
+      color: var(--text-mid);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-xs);
+    }
+    .btn-ghost:hover {
+      border-color: rgba(0,0,0,0.16);
+      color: var(--text-primary);
+      transform: translateY(-1px);
+    }
+    .btn-sm {
+      padding: 0.38rem 0.85rem;
+      font-size: 0.75rem;
+      border-radius: var(--radius-xs);
+      gap: 0.35rem;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       CARD — less blur, more structured
+    ═══════════════════════════════════════════════════════════════ */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow 0.18s ease, transform 0.18s ease, border-color 0.18s ease;
+    }
+    .card:hover {
+      box-shadow: var(--shadow-hover);
+      transform: translateY(-2px);
+      border-color: rgba(0,0,0,0.13);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       SECTION MARKER — mono line style
+    ═══════════════════════════════════════════════════════════════ */
+    .section-marker {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+    .section-marker .t-label { margin: 0; }
+    .section-marker::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+      max-width: 48px;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       HERO
+    ═══════════════════════════════════════════════════════════════ */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding-top: 76px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.05fr 0.95fr;
+      gap: 5rem;
+      align-items: center;
+      width: 100%;
+    }
+
+    /* Availability badge */
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      padding: 0.3rem 0.8rem 0.3rem 0.5rem;
+      border-radius: 100px;
+      margin-bottom: 2rem;
+    }
+    .badge-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: blink 3s ease-in-out infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    .hero-name { margin-bottom: 0.9rem; }
+
+    /* Tagline: plain, no italic */
+    .hero-tagline {
+      font-family: 'Geist', sans-serif;
+      font-size: clamp(0.95rem, 1.8vw, 1.1rem);
+      color: var(--text-muted);
+      font-weight: 400;
+      margin-bottom: 1rem;
+      letter-spacing: -0.01em;
+    }
+
+    .hero-buttons { display: flex; gap: 0.6rem; margin-top: 2.25rem; flex-wrap: wrap; }
+
+    /* Right visual: calmer orbs, less blur */
+    .hero-visual {
+      position: relative;
+      height: 440px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      opacity: 0.18;   /* reduced from 0.35 */
+    }
+    .orb-1 { width: 300px; height: 300px; background: #4A7C6F; top: 12%; left: 8%; }
+    .orb-2 { width: 180px; height: 180px; background: #7BA098; top: 48%; left: 42%; }
+
+    /* Code card — Vercel-style terminal */
+    .hero-code-card {
+      position: relative;
+      z-index: 2;
+      background: #FAFAF9;
+      border: 1px solid var(--border-2);
+      border-top: 1px solid rgba(0,0,0,0.07);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-md);
+      padding: 0;
+      width: 88%;
+      max-width: 360px;
+      overflow: hidden;
+    }
+    .code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.65rem 1rem;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg-2);
+    }
+    .code-dots { display: flex; gap: 5px; }
+    .code-dots span {
+      width: 9px; height: 9px; border-radius: 50%;
+    }
+    .code-dots span:nth-child(1) { background: #FF5F57; }
+    .code-dots span:nth-child(2) { background: #FFBD2E; }
+    .code-dots span:nth-child(3) { background: #28CA41; }
+    .code-filename {
+      font-family: 'Geist Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--text-faint);
+    }
+    .code-body { padding: 1.25rem 1.25rem 1.25rem; }
+    .code-line {
+      font-family: 'Geist Mono', monospace;
+      font-size: 0.76rem;
+      line-height: 1.85;
+      color: var(--text-mid);
+    }
+    .kw  { color: var(--accent); }
+    .fn  { color: #4A6FA5; }
+    .str { color: #7A5C42; }
+    .num { color: #8B5E8B; }
+    .cm  { color: var(--text-faint); }
+
+    /* ═══════════════════════════════════════════════════════════════
+       ABOUT
+    ═══════════════════════════════════════════════════════════════ */
+    #about { background: var(--bg-2); }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 4rem;
+      align-items: start;
+    }
+    .about-card { padding: 2rem 2.25rem; }
+
+    /* Skill tags — more precise, chip-like */
+    .skill-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 1.25rem; }
+    .skill-tag {
+      font-family: 'Geist Mono', monospace;
+      font-size: 0.68rem;
+      padding: 0.28rem 0.7rem;
+      border-radius: var(--radius-xs);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      transition: all 0.15s;
+      letter-spacing: 0.01em;
+    }
+    .skill-tag:hover {
+      background: var(--accent-bg);
+      border-color: var(--accent-line);
+      color: var(--accent);
+    }
+    .skill-tag.accent {
+      background: var(--accent-bg);
+      border-color: var(--accent-line);
+      color: var(--accent);
+    }
+
+    /* Stats */
+    .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+    .stat-card { padding: 1.35rem 1.25rem; text-align: left; }
+    .stat-num {
+      font-family: 'Geist Mono', monospace;
+      font-size: 1.75rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      letter-spacing: -0.04em;
+      line-height: 1;
+      margin-bottom: 0.35rem;
+    }
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       PROJECTS — more "system" structured
+    ═══════════════════════════════════════════════════════════════ */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1px;
+      margin-top: 3rem;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .project-card {
+      padding: 1.75rem;
+      display: flex;
+      flex-direction: column;
+      background: var(--surface);
+      transition: background 0.15s ease;
+    }
+    .project-card:hover { background: #FFFFFF; }
+
+    /* Project index number — system log style */
+    .project-index {
+      font-family: 'Geist Mono', monospace;
+      font-size: 0.63rem;
+      color: var(--text-faint);
+      margin-bottom: 1rem;
+      letter-spacing: 0.04em;
+    }
+    .project-title-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-bottom: 0.6rem;
+    }
+    .project-status {
+      display: inline-block;
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      margin-top: 5px;
+      flex-shrink: 0;
+    }
+    .project-tech {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+      margin: 1rem 0;
+    }
+    .tech-tag {
+      font-family: 'Geist Mono', monospace;
+      font-size: 0.65rem;
+      padding: 0.18rem 0.5rem;
+      border-radius: var(--radius-xs);
+      background: var(--bg-2);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      letter-spacing: 0.01em;
+    }
+    .project-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 1rem -1.75rem;
+    }
+    .project-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: auto;
+    }
+    .project-type {
+      font-family: 'Geist Mono', monospace;
+      font-size: 0.63rem;
+      color: var(--text-faint);
+    }
+    .project-links { display: flex; gap: 0.4rem; }
+
+    /* ═══════════════════════════════════════════════════════════════
+       EXPERIENCE TIMELINE
+    ═══════════════════════════════════════════════════════════════ */
+    #experience { background: var(--bg-2); }
+    .timeline {
+      position: relative;
+      margin-top: 3rem;
+      padding-left: 1.75rem;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 10px; bottom: 0;
+      width: 1px;
+      background: linear-gradient(to bottom, var(--accent) 0%, var(--border) 100%);
+    }
+    .timeline-item {
+      position: relative;
+      padding: 0 0 2.75rem 2.25rem;
+    }
+    .timeline-item:last-child { padding-bottom: 0; }
+    .timeline-dot {
+      position: absolute;
+      left: calc(-1.75rem - 4px);
+      top: 7px;
+      width: 9px; height: 9px;
+      border-radius: 50%;
+      background: var(--bg-2);
+      border: 1.5px solid var(--border);
+    }
+    .timeline-dot.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px var(--accent-bg);
+    }
+    .timeline-card { padding: 1.35rem 1.5rem; }
+    .timeline-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0.35rem;
+    }
+    .timeline-role {
+      font-weight: 600;
+      font-size: 0.9rem;
+      letter-spacing: -0.01em;
+    }
+    .timeline-company {
+      color: var(--accent);
+      font-size: 0.825rem;
+      font-weight: 500;
+    }
+    .timeline-period {
+      font-family: 'Geist Mono', monospace;
+      font-size: 0.67rem;
+      color: var(--text-faint);
+      padding: 0.18rem 0.55rem;
+      background: var(--bg-3);
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    .timeline-bullets { margin-top: 0.75rem; padding-left: 1rem; }
+    .timeline-bullets li {
+      font-size: 0.845rem;
+      color: var(--text-mid);
+      margin-bottom: 0.45rem;
+      line-height: 1.7;
+    }
+    .timeline-bullets li::marker { color: var(--accent); }
+
+    /* ═══════════════════════════════════════════════════════════════
+       CONTACT
+    ═══════════════════════════════════════════════════════════════ */
+    .contact-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+      align-items: start;
+    }
+    .contact-form-card { padding: 1.75rem 2rem; }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 0.35rem;
+      font-family: 'Geist Mono', monospace;
+      letter-spacing: 0.02em;
+    }
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 0.6rem 0.875rem;
+      font-size: 0.85rem;
+      font-family: 'Geist', sans-serif;
+      color: var(--text-primary);
+      transition: border-color 0.15s, box-shadow 0.15s;
+      outline: none;
+      resize: vertical;
+    }
+    .form-group input::placeholder,
+    .form-group textarea::placeholder { color: var(--text-faint); }
+    .form-group input:focus,
+    .form-group textarea:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px var(--accent-bg);
+    }
+    .form-group textarea { min-height: 110px; }
+
+    .social-links { display: flex; flex-direction: column; gap: 0.6rem; }
+    .social-link {
+      display: flex;
+      align-items: center;
+      gap: 0.875rem;
+      padding: 0.8rem 1.1rem;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      transition: border-color 0.15s, transform 0.15s;
+      font-size: 0.845rem;
+      color: var(--text-mid);
+    }
+    .social-link:hover {
+      border-color: rgba(0,0,0,0.15);
+      color: var(--text-primary);
+      transform: translateX(3px);
+    }
+    .social-icon {
+      width: 28px; height: 28px;
+      background: var(--bg-2);
+      border-radius: var(--radius-sm);
+      display: grid;
+      place-items: center;
+      font-size: 0.8rem;
+      flex-shrink: 0;
+      border: 1px solid var(--border);
+    }
+    .social-handle {
+      font-family: 'Geist Mono', monospace;
+      font-size: 0.68rem;
+      color: var(--text-faint);
+      margin-top: 1px;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════════════════════════════ */
+    footer {
+      border-top: 1px solid var(--border);
+      padding-block: 1.5rem;
+      background: var(--bg);
+    }
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+    .footer-inner p {
+      font-family: 'Geist Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--text-faint);
+    }
+    .footer-accent {
+      font-family: 'Geist Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--accent);
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       DIVIDER
+    ═══════════════════════════════════════════════════════════════ */
+    .h-divider {
+      height: 1px;
+      background: var(--border);
+      margin-block: 2rem;
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       MOBILE RESPONSIVE
+    ═══════════════════════════════════════════════════════════════ */
+    @media (max-width: 768px) {
+      .hero-grid,
+      .about-grid,
+      .contact-wrap { grid-template-columns: 1fr; gap: 3rem; }
+      .hero-visual { height: 260px; }
+      .orb-1 { width: 200px; height: 200px; }
+      .nav-links { display: none; }
+      .stat-grid { grid-template-columns: 1fr 1fr; gap: 0.6rem; }
+      section { padding-block: clamp(4rem, 9vw, 6rem); }
+      .projects-grid { grid-template-columns: 1fr; border-radius: var(--radius); }
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
+       ANIMATIONS — faster, subtler
+    ═══════════════════════════════════════════════════════════════ */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .fade-up:nth-child(2) { transition-delay: 0.07s; }
+    .fade-up:nth-child(3) { transition-delay: 0.13s; }
+    .fade-up:nth-child(4) { transition-delay: 0.19s; }
+
+  </style>
+</head>
+<body>
+
+  <!-- ── NAV ──────────────────────────────────────────────────── -->
+  <nav>
+    <div class="container nav-inner">
+      <span class="nav-logo">vedant<span>.dev</span></span>
+      <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#experience">Experience</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       HERO
+  ════════════════════════════════════════════════════════════════ -->
+  <section id="hero">
+    <div class="container">
+      <div class="hero-grid">
+
+        <!-- Left -->
+        <div>
+          <div class="hero-badge">
+            <span class="badge-dot"></span>
+            <span class="t-label" style="margin:0">Available for opportunities</span>
+          </div>
+
+          <h1 class="t-display hero-name">Vedant<br>Tiwari.</h1>
+
+          <p class="hero-tagline">
+            Backend Engineer — distributed systems, reliability, and performance.
+          </p>
+
+          <p class="t-body" style="max-width: 460px;">
+            I work on real production problems: distributed data flow, system
+            reliability, and backend performance. Multi-tenant SaaS backends,
+            Kafka-based log pipelines and cloud-deployed services in Go, Node.js
+            and PostgreSQL.
+          </p>
+
+          <div class="hero-buttons">
+            <a href="#projects" class="btn btn-primary">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+              View Projects
+            </a>
+            <a href="#contact" class="btn btn-ghost">
+              <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              Contact
+            </a>
+          </div>
+        </div>
+
+        <!-- Right: code card -->
+        <div class="hero-visual">
+          <div class="orb orb-1"></div>
+          <div class="orb orb-2"></div>
+          <div class="hero-code-card">
+            <div class="code-header">
+              <div class="code-dots"><span></span><span></span><span></span></div>
+              <span class="code-filename">pipeline.go</span>
+              <span style="width:50px"></span>
+            </div>
+            <div class="code-body">
+              <div class="code-line"><span class="cm">// Kafka ingestion pipeline</span></div>
+              <div class="code-line">&nbsp;</div>
+              <div class="code-line"><span class="kw">func</span> <span class="fn">NewConsumer</span>(cfg Config) *Consumer {</div>
+              <div class="code-line">&nbsp;&nbsp;<span class="kw">return</span> &amp;Consumer{</div>
+              <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;partitions: <span class="num">16</span>,</div>
+              <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;throughput: <span class="str">"10k/sec"</span>,</div>
+              <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;delivery:   <span class="str">"exactly-once"</span>,</div>
+              <div class="code-line">&nbsp;&nbsp;}</div>
+              <div class="code-line">}</div>
+              <div class="code-line">&nbsp;</div>
+              <div class="code-line"><span class="cm">// ingested: 8M+ audit records ✓</span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       ABOUT
+  ════════════════════════════════════════════════════════════════ -->
+  <section id="about">
+    <div class="container">
+      <div class="section-marker">
+        <span class="t-label">About</span>
+      </div>
+      <h2 class="t-h2" style="margin-bottom: 3.25rem; max-width: 560px; line-height: 1.3;">
+        Built on first principles,<br>not framework tutorials.
+      </h2>
+
+      <div class="about-grid">
+
+        <!-- Story -->
+        <div class="card about-card fade-up">
+          <p class="t-label" style="margin-bottom: 0.85rem">Engineering Mindset</p>
+          <p class="t-body" style="margin-bottom: 0.95rem">
+            I enjoy understanding how systems behave under pressure — concurrency,
+            network latency, database bottlenecks, failure recovery. Most of my
+            learning comes from building and debugging real production services.
+          </p>
+          <p class="t-body" style="margin-bottom: 0.95rem">
+            My focus is backend architecture, clean service boundaries, and
+            operational reliability. I like designing systems that are simple
+            to reason about but strong under real-world load.
+          </p>
+          <p class="t-body">
+            Currently deepening my understanding of distributed systems, system
+            design, and performance engineering while building independent projects.
+          </p>
+
+          <div class="h-divider"></div>
+
+          <p class="t-label" style="margin-bottom: 0.85rem">Stack</p>
+          <div class="skill-tags">
+            <span class="skill-tag accent">Backend Architecture</span>
+            <span class="skill-tag accent">System Design</span>
+            <span class="skill-tag accent">Scalability</span>
+            <span class="skill-tag">Golang</span>
+            <span class="skill-tag">Node.js</span>
+            <span class="skill-tag">TypeScript</span>
+            <span class="skill-tag">PostgreSQL</span>
+            <span class="skill-tag">MongoDB</span>
+            <span class="skill-tag">Redis</span>
+            <span class="skill-tag">Kafka</span>
+            <span class="skill-tag">Docker</span>
+            <span class="skill-tag">AWS</span>
+          </div>
+        </div>
+
+        <!-- Stats + exploring -->
+        <div>
+          <div class="stat-grid">
+            <div class="card stat-card fade-up">
+              <div class="stat-num">02</div>
+              <div class="stat-label">Years in production</div>
+            </div>
+            <div class="card stat-card fade-up">
+              <div class="stat-num">20+</div>
+              <div class="stat-label">Services shipped</div>
+            </div>
+            <div class="card stat-card fade-up">
+              <div class="stat-num">99.9</div>
+              <div class="stat-label">% uptime maintained</div>
+            </div>
+            <div class="card stat-card fade-up">
+              <div class="stat-num">5×</div>
+              <div class="stat-label">Scale improvements</div>
+            </div>
+          </div>
+
+          <div class="card fade-up" style="margin-top: 0.75rem; padding: 1.35rem 1.5rem;">
+            <p class="t-label" style="margin-bottom: 0.75rem">Currently Exploring</p>
+            <div class="skill-tags">
+              <span class="skill-tag accent">eBPF observability</span>
+              <span class="skill-tag accent">Wasm runtimes</span>
+              <span class="skill-tag">Rust</span>
+              <span class="skill-tag">DuckDB</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       PROJECTS
+  ════════════════════════════════════════════════════════════════ -->
+  <section id="projects">
+    <div class="container">
+      <div class="section-marker">
+        <span class="t-label">Projects</span>
+      </div>
+      <h2 class="t-h2" style="max-width: 500px; line-height: 1.3;">
+        Systems built and shipped<br>to production.
+      </h2>
+
+      <div class="projects-grid">
+
+        <!-- 01 -->
+        <div class="project-card fade-up">
+          <div class="project-index">01 / pipeline</div>
+          <div class="project-title-row">
+            <h3 class="t-h3">Database Activity Monitoring</h3>
+            <span class="project-status"></span>
+          </div>
+          <p class="t-body" style="font-size: 0.845rem;">
+            High-throughput event streaming pipeline processing 10K+ events/sec
+            with exactly-once delivery semantics and consumer concurrency to improve ingestion reliability
+            under production load.
+          </p>
+          <div class="project-tech">
+            <span class="tech-tag">Node.js</span>
+            <span class="tech-tag">Kafka</span>
+            <span class="tech-tag">S3</span>
+            <span class="tech-tag">Workers</span>
+            <span class="tech-tag">Logging</span>
+          </div>
+          <div class="project-divider"></div>
+          <div class="project-meta">
+            <span class="project-type">event-driven</span>
+          </div>
+        </div>
+
+        <!-- 02 -->
+        <div class="project-card fade-up">
+          <div class="project-index">02 / saas-backend</div>
+          <div class="project-title-row">
+            <h3 class="t-h3">Multi-tenant SaaS Backend</h3>
+            <span class="project-status"></span>
+          </div>
+          <p class="t-body" style="font-size: 0.845rem;">
+            Production-grade multi-tenant backend with tenant isolation, RBAC,
+            Redis caching, plan-based quotas, and audit logging.
+          </p>
+          <div class="project-tech">
+            <span class="tech-tag">Node.js</span>
+            <span class="tech-tag">MongoDB</span>
+            <span class="tech-tag">Redis</span>
+            <span class="tech-tag">Docker</span>
+            <span class="tech-tag">AWS</span>
+          </div>
+          <div class="project-divider"></div>
+          <div class="project-meta">
+            <span class="project-type">multi-tenant</span>
+          </div>
+        </div>
+
+        <!-- 03 -->
+        <div class="project-card fade-up">
+          <div class="project-index">03 / proxy</div>
+          <div class="project-title-row">
+            <h3 class="t-h3">Sentinelpg — PostgreSQL Proxy</h3>
+            <span class="project-status"></span>
+          </div>
+          <p class="t-body" style="font-size: 0.845rem;">
+            PostgreSQL proxy in Golang with clean architecture, structured
+            logging, Prometheus metrics, and graceful shutdown. Policy-based
+            query handling with full observability.
+          </p>
+          <div class="project-tech">
+            <span class="tech-tag">Golang</span>
+            <span class="tech-tag">PostgreSQL</span>
+            <span class="tech-tag">Redis</span>
+            <span class="tech-tag">Prometheus</span>
+          </div>
+          <div class="project-divider"></div>
+          <div class="project-meta">
+            <span class="project-type">infrastructure</span>
+          </div>
+        </div>
+
+        <!-- 04 -->
+        <div class="project-card fade-up">
+          <div class="project-index">04 / monitoring</div>
+          <div class="project-title-row">
+            <h3 class="t-h3">SRE Monitoring Tool</h3>
+            <span class="project-status"></span>
+          </div>
+          <p class="t-body" style="font-size: 0.845rem;">
+            Real-time service monitoring with infra-level metrics and 99.9%
+            uptime. REST backend in Node.js with Redis caching and YugabyteDB
+            for distributed storage.
+          </p>
+          <div class="project-tech">
+            <span class="tech-tag">Node.js</span>
+            <span class="tech-tag">JWT</span>
+            <span class="tech-tag">YugabyteDB</span>
+            <span class="tech-tag">Redis</span>
+            <span class="tech-tag">AWS</span>
+          </div>
+          <div class="project-divider"></div>
+          <div class="project-meta">
+            <span class="project-type">observability</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       EXPERIENCE
+  ════════════════════════════════════════════════════════════════ -->
+  <section id="experience">
+    <div class="container">
+      <div class="section-marker">
+        <span class="t-label">Experience</span>
+      </div>
+      <h2 class="t-h2" style="max-width: 500px; line-height: 1.3;">
+        Where the work<br>gets done.
+      </h2>
+
+      <div style="max-width: 680px; margin-top: 3rem;">
+        <div class="timeline">
+
+          <div class="timeline-item fade-up">
+            <div class="timeline-dot active"></div>
+            <div class="card timeline-card">
+              <div class="timeline-header">
+                <div>
+                  <div class="timeline-role">Software Engineer</div>
+                  <div class="timeline-company" style="margin-top:2px">Kfin Technologies</div>
+                </div>
+                <span class="timeline-period">Apr 2024 — Present</span>
+              </div>
+              <ul class="timeline-bullets">
+                <li>Optimized PostgreSQL query performance by refactoring joins, eliminating redundant queries, and tuning indexes — 20–30% improvement in P95 latency.</li>
+                <li>Designed a Kafka-based distributed ingestion pipeline with 16 partitions and parallel consumers — sustained 10,000+ records/sec, 8M+ audit records ingested.</li>
+                <li>Engineered backend services supporting enterprise workflows handling 10K–15K API requests/day with consistent latency and high availability.</li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       CONTACT
+  ════════════════════════════════════════════════════════════════ -->
+  <section id="contact">
+    <div class="container">
+      <div class="section-marker">
+        <span class="t-label">Contact</span>
+      </div>
+      <h2 class="t-h2" style="margin-bottom: 0.6rem; line-height: 1.3;">
+        Let's build something<br>worth building.
+      </h2>
+      <p class="t-body" style="margin-bottom: 3.25rem; max-width: 440px;">
+        Open to backend engineer and software engineer roles. Response within 24 hours.
+      </p>
+
+      <div class="contact-wrap">
+
+        <!-- Form -->
+        <div class="card contact-form-card fade-up">
+          <p class="t-label" style="margin-bottom: 1.25rem">Send a message</p>
+          <div class="form-group">
+            <label>name</label>
+            <input type="text" placeholder="Your name" />
+          </div>
+          <div class="form-group">
+            <label>email</label>
+            <input type="email" placeholder="you@company.com" />
+          </div>
+          <div class="form-group">
+            <label>message</label>
+            <textarea placeholder="Tell me about the project or role…"></textarea>
+          </div>
+          <button class="btn btn-primary" style="width:100%; justify-content:center; margin-top:0.25rem;">
+            Send Message
+            <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </div>
+
+        <!-- Links -->
+        <div class="fade-up">
+          <p class="t-label" style="margin-bottom: 1.25rem">Find me here</p>
+          <div class="social-links">
+            <a href="mailto:vedanttiwari641@gmail.com" class="social-link">
+              <span class="social-icon">✉️</span>
+              <div>
+                <div style="font-weight:500; font-size:0.845rem;">Email</div>
+                <div class="social-handle">vedanttiwari641@gmail.com</div>
+              </div>
+            </a>
+            <a href="https://linkedin.com/in/vedanttiwari1604" target="_blank" class="social-link">
+              <span class="social-icon">
+                <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24" style="color:var(--accent)"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+              </span>
+              <div>
+                <div style="font-weight:500; font-size:0.845rem;">LinkedIn</div>
+                <div class="social-handle">linkedin.com/in/vedanttiwari1604</div>
+              </div>
+            </a>
+            <a href="https://github.com/vedant-colab" target="_blank" class="social-link">
+              <span class="social-icon">
+                <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24" style="color:var(--accent)"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+              </span>
+              <div>
+                <div style="font-weight:500; font-size:0.845rem;">GitHub</div>
+                <div class="social-handle">github.com/vedant-colab</div>
+              </div>
+            </a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ────────────────────────────────────────────────── -->
+  <footer>
+    <div class="container footer-inner">
+      <p>© 2025 Vedant Tiwari — Built with intention.</p>
+      <span class="footer-accent">vedant.dev</span>
+    </div>
+  </footer>
+
+  <!-- ── SCROLL ANIMATIONS ──────────────────────────────────────── -->
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+  </script>
+
+</body>
+</html>
